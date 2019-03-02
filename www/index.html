@@ -1,0 +1,73 @@
+<!doctype html>
+<head>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+</head>
+
+<body>
+  <h1>Hockey Stick</h1>
+  <div>
+      <p id="gX">gryro X: 0</p>
+      <p id="gY">gryro Y: 0</p>
+      <p id="gZ">gryro Z: 0</p>
+      <p id="aX">acceleration X: 0</p>
+      <p id="aY">acceleration Y: 0</p>
+      <p id="aZ">acceleration Z: 0</p>
+    </div>
+</body>
+
+<script>
+firebase.initializeApp({
+  apiKey: 'AIzaSyBLqPvIYIL-Bf-W7cBteUDmtRhRSdZ0qGc',
+  authDomain: 'cloudhockey-233308.firebaseapp.com',
+  projectId: 'cloudhockey-233308'
+});
+
+var db = firebase.firestore();
+
+let gryro = new Gyroscope();
+gryro.start();
+
+let acceleration = new Accelerometer();
+acceleration.start();
+
+var user1 = db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO");
+
+gryro.onreading = () => {
+  user1.update({
+    gryrox: gryro.x,
+    gryroy: gryro.y,
+    gryroz: gryro.z,
+    accelerationx: acceleration.x,
+    accelerationy: acceleration.y,
+    accelerationz: acceleration.z
+  })
+  .then(function() {
+    console.log("Document successfully updated!");
+  })
+  .catch(function(error) {
+    // The document probably doesn't exist.
+    console.error("Error updating document: ", error);
+  });
+
+    document.getElementById("gX").textContent="gryro X-axis " + gryro.x;
+    document.getElementById("gY").textContent="gryro Y-axis " + gryro.y;
+    document.getElementById("gZ").textContent="gryro Z-axis " + gryro.z;
+
+    document.getElementById("aX").textContent="acceleration X-axis " + acceleration.x;
+    document.getElementById("aY").textContent="acceleration Y-axis " + acceleration.y;
+    document.getElementById("aZ").textContent="acceleration Z-axis " + acceleration.z;
+
+    // console.log("gryro Y-axis " + gryro.y);
+    // console.log("gryro Z-axis " + gryro.z);
+    // console.log("acceleration X-axis " + acceleration.x);
+    // console.log("acceleration Y-axis " + acceleration.y);
+    // console.log("acceleration Z-axis " + acceleration.z);
+};
+
+
+gryro.onerror = event => console.log(event.error.name, event.error.message);
+acceleration.onerror = event => console.log(event.error.name, event.error.message);
+</script>
+
+</html>
