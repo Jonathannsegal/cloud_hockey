@@ -32,7 +32,9 @@
     </div>
 	<img id="rink" src="rink.jpg" height="400" width="800" style="display: none;">
 	<canvas id="canvasId" width="633" height="318" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
-	<canvas id="myChart" width="633" height="318" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
+	<div style="width:50%;">
+		<canvas id="myChart" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
+	</div>
 	<img id="snakeHead" src="snakeHead.png" style="display: none;">
 <!-- the rest of your beautiful code goes here -->
 
@@ -52,12 +54,12 @@ var indexX = 316;
 var indexY = 159;
 var scale = 10;
 var velocityX = 0;
-var distanceX = 0;
 var velocityZ = 0;
-var distanceZ = 0;
+var timeStamp = 0;
 
 db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO")
     .onSnapshot(function(doc) {
+	document.getElementById("ts").textContent="time stamp " + doc.data().timestamp;
     document.getElementById("gX").textContent="gryro X-axis " + doc.data().gryrox;
     document.getElementById("gY").textContent="gryro Y-axis " + doc.data().gryroy;
     document.getElementById("gZ").textContent="gryro Z-axis " + doc.data().gryroz;
@@ -68,12 +70,18 @@ db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO")
 	
 	var acceleration = Math.sqrt(Math.pow(doc.data().accelerationx, 2), Math.pow(doc.data().accelerationy, 2), Math.pow(doc.data().accelerationx, 2));
     moveChart(acceleration);
-	
+	0
 	var context = document.getElementById("canvasId").getContext("2d");
 	//context.clearRect(indexX - 40, indexY - 40, 80, 80);
+	
+	
+	indexX += (velocityX + ((doc.data().accelerationx) * (Math.pow(doc.data().timestamp - timeStamp, 2))/2)) / 50000;
+	velocityX += (doc.data().accelerationx)*(doc.data().timestamp - timeStamp);
+	indexY += (velocityZ + (0.5 * (doc.data().accelerationz) * (Math.pow(doc.data().timestamp - timeStamp, 2)))) / 10000000;
+	velocityZ += (doc.data().accelerationz)*(doc.data().timestamp - timeStamp);
+	timeStamp = doc.data().timestamp;
 	context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
-	indexX += (distanceX)*scale;
-	indexY += (distanceZ)*scale;
+	
 	});
 
 
@@ -94,6 +102,13 @@ function moveChart(accel) {
 	chart.update();
 }
 
+Chart.scaleService.updateScaleDefaults('linear', {
+    ticks: {
+        min: 0,
+		max: 100
+    }
+});
+
 var context = document.getElementById('myChart').getContext('2d');
 var chart = new Chart(context, {
     // The type of chart we want to create
@@ -101,12 +116,14 @@ var chart = new Chart(context, {
 
     // The data for our dataset
     data: {
-        labels: ["", "", "", "", "", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", ""],
+        labels: ["", "", "", "", "", "", "", "","", "", "", "","", "", "", "",""],
         datasets: [{
             label: "Hockey Stick Acceleration",
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: [0, 100, 200, 300, 400, 500, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            data: [0, 100, 200, 300, 400, 500, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         }]
     },
 
