@@ -31,46 +31,29 @@ firebase.initializeApp({
 });
 
 var db = firebase.firestore();
-var provider = new firebase.auth.GoogleAuthProvider();
-var user = firebase.auth().currentUser;
 
-//Authentication
-if (user) {
-  // User is signed in.
-  alert("signed in");
-} else {
-  // No user is signed in.
-    // FirebaseUI config.
-    var uiConfig = {
-    signInSuccessUrl: '<url-to-redirect-to-on-success>',
-    signInOptions: [
-      // Leave the lines as is for the providers you want to offer your users.
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    ],
-    // tosUrl and privacyPolicyUrl accept either url string or a callback
-    // function.
-    // Terms of service url/callback.
-    tosUrl: '<your-tos-url>',
-    // Privacy policy url/callback.
-    privacyPolicyUrl: function() {
-      window.location.assign('<your-privacy-policy-url>');
-    }
-  };
-}
-
-
-  // Initialize the FirebaseUI Widget using Firebase.
-  var ui = new firebaseui.auth.AuthUI(firebase.auth());
-  // The start method will wait until the DOM is loaded.
-  ui.start('#firebaseui-auth-container', uiConfig);
-
-  firebase.auth().signInWithPopup(provider).then(function(result) {
-  // This gives you a Google Access Token. You can use it to access the Google API.
-  var token = result.credential.accessToken;
+firebase.auth().getRedirectResult().then(function(result) {
+  if (result.credential) {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    var token = result.credential.accessToken;
+    // ...
+  }
   // The signed-in user info.
-  user = result.user;
-  console.log(result.user);
-  // ...
+  var user = firebase.auth().currentUser;
+  console.log(user);
+  db.collection("users").doc(user.email).set({
+    name: "Los Angeles",
+    state: "CA",
+    country: "USA"
+})
+.then(function() {
+    console.log("Document successfully written!");
+})
+.catch(function(error) {
+    console.error("Error writing document: ", error);
+});
+
+
 }).catch(function(error) {
   // Handle Errors here.
   var errorCode = error.code;
@@ -81,9 +64,6 @@ if (user) {
   var credential = error.credential;
   // ...
 });
-
-
-
 
 let gryro = new Gyroscope();
 gryro.start();
