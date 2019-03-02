@@ -10,18 +10,7 @@
 
 <body>
   <div id="firebaseui-auth-container"></div>
-  <h1>Hockey Stick</h1>
-  <div>
-      <p id="tS">TimeStamp: 0</p>
-      <br>
-      <p id="gX">gryro X: 0</p>
-      <p id="gY">gryro Y: 0</p>
-      <p id="gZ">gryro Z: 0</p>
-      <p id="aX">acceleration X: 0</p>
-      <p id="aY">acceleration Y: 0</p>
-      <p id="aZ">acceleration Z: 0</p>
-    </div>
-</body>
+  <h1>Login</h1>
 
 <script>
 firebase.initializeApp({
@@ -95,7 +84,6 @@ var user1 = db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO");
 
 gryro.onreading = () => {
   user1.update({
-    timestamp: acceleration.timestamp,
     gryrox: gryro.x,
     gryroy: gryro.y,
     gryroz: gryro.z,
@@ -103,7 +91,6 @@ gryro.onreading = () => {
     accelerationy: acceleration.y,
     accelerationz: acceleration.z
   })
-    document.getElementById("tS").textContent="TimeStamp " + gryro.timestamp;
 
     document.getElementById("gX").textContent="gryro X-axis " + gryro.x;
     document.getElementById("gY").textContent="gryro Y-axis " + gryro.y;
@@ -112,6 +99,12 @@ gryro.onreading = () => {
     document.getElementById("aX").textContent="acceleration X-axis " + acceleration.x;
     document.getElementById("aY").textContent="acceleration Y-axis " + acceleration.y;
     document.getElementById("aZ").textContent="acceleration Z-axis " + acceleration.z;
+
+    // console.log("gryro Y-axis " + gryro.y);
+    // console.log("gryro Z-axis " + gryro.z);
+    // console.log("acceleration X-axis " + acceleration.x);
+    // console.log("acceleration Y-axis " + acceleration.y);
+    // console.log("acceleration Z-axis " + acceleration.z);
 };
 
 
