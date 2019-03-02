@@ -9,8 +9,8 @@
 </head>
 
 <body>
-  <div id="firebaseui-auth-container"></div>
   <h1>Login</h1>
+  <div id="firebaseui-auth-container"></div>
 
 <script>
 firebase.initializeApp({
@@ -24,11 +24,6 @@ var provider = new firebase.auth.GoogleAuthProvider();
 var user = firebase.auth().currentUser;
 
 //Authentication
-if (user) {
-  // User is signed in.
-  alert("signed in");
-} else {
-  // No user is signed in.
     // FirebaseUI config.
     var uiConfig = {
     signInSuccessUrl: '<url-to-redirect-to-on-success>',
@@ -45,7 +40,6 @@ if (user) {
       window.location.assign('<your-privacy-policy-url>');
     }
   };
-}
 
 
   // Initialize the FirebaseUI Widget using Firebase.
@@ -71,45 +65,7 @@ if (user) {
   // ...
 });
 
-
-
-
-let gryro = new Gyroscope();
-gryro.start();
-
-let acceleration = new Accelerometer();
-acceleration.start();
-
 var user1 = db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO");
-
-gryro.onreading = () => {
-  user1.update({
-    gryrox: gryro.x,
-    gryroy: gryro.y,
-    gryroz: gryro.z,
-    accelerationx: acceleration.x,
-    accelerationy: acceleration.y,
-    accelerationz: acceleration.z
-  })
-
-    document.getElementById("gX").textContent="gryro X-axis " + gryro.x;
-    document.getElementById("gY").textContent="gryro Y-axis " + gryro.y;
-    document.getElementById("gZ").textContent="gryro Z-axis " + gryro.z;
-
-    document.getElementById("aX").textContent="acceleration X-axis " + acceleration.x;
-    document.getElementById("aY").textContent="acceleration Y-axis " + acceleration.y;
-    document.getElementById("aZ").textContent="acceleration Z-axis " + acceleration.z;
-
-    // console.log("gryro Y-axis " + gryro.y);
-    // console.log("gryro Z-axis " + gryro.z);
-    // console.log("acceleration X-axis " + acceleration.x);
-    // console.log("acceleration Y-axis " + acceleration.y);
-    // console.log("acceleration Z-axis " + acceleration.z);
-};
-
-
-gryro.onerror = event => console.log(event.error.name, event.error.message);
-acceleration.onerror = event => console.log(event.error.name, event.error.message);
 </script>
 
 </html>

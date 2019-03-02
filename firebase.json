@@ -21,7 +21,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/www/index.html"
+        "destination": "/www/login.html"
       }
     ]
   },
