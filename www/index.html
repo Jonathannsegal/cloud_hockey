@@ -1,10 +1,14 @@
 <!doctype html>
 <head>
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
 </head>
 
 <body>
+  <div id="firebaseui-auth-container"></div>
   <h1>Hockey Stick</h1>
   <div>
       <p id="gX">gryro X: 0</p>
@@ -25,6 +29,32 @@ firebase.initializeApp({
 
 var db = firebase.firestore();
 
+//Authentication
+  // FirebaseUI config.
+  var uiConfig = {
+    signInSuccessUrl: '<url-to-redirect-to-on-success>',
+    signInOptions: [
+      // Leave the lines as is for the providers you want to offer your users.
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    ],
+    // tosUrl and privacyPolicyUrl accept either url string or a callback
+    // function.
+    // Terms of service url/callback.
+    tosUrl: '<your-tos-url>',
+    // Privacy policy url/callback.
+    privacyPolicyUrl: function() {
+      window.location.assign('<your-privacy-policy-url>');
+    }
+  };
+
+  // Initialize the FirebaseUI Widget using Firebase.
+  var ui = new firebaseui.auth.AuthUI(firebase.auth());
+  // The start method will wait until the DOM is loaded.
+  ui.start('#firebaseui-auth-container', uiConfig);
+
+
+
+
 let gryro = new Gyroscope();
 gryro.start();
 
@@ -42,13 +72,6 @@ gryro.onreading = () => {
     accelerationy: acceleration.y,
     accelerationz: acceleration.z
   })
-  .then(function() {
-    console.log("Document successfully updated!");
-  })
-  .catch(function(error) {
-    // The document probably doesn't exist.
-    console.error("Error updating document: ", error);
-  });
 
     document.getElementById("gX").textContent="gryro X-axis " + gryro.x;
     document.getElementById("gY").textContent="gryro Y-axis " + gryro.y;
