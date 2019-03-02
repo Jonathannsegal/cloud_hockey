@@ -1,11 +1,18 @@
 <!doctype html>
 <head>
+<link rel="stylesheet" href="style.css">
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
 </head>
 
 <body>
+  <!-- this is a title on the page -->
   <h1>NOT Hockey Stick</h1>
+  <!-- this is the data that you have
+  gyro x and y show orientation and acceleration x and y show movment
+  what you should do is baced on direction move at the speed of the player
+  at the start the player should have to "calibrate" by standing in a set area 
+  then we dont need to deal with GPS -->
   <div>
       <p id="gX">gryro X: 0</p>
       <p id="gY">gryro Y: 0</p>
@@ -14,6 +21,12 @@
       <p id="aY">acceleration Y: 0</p>
       <p id="aZ">acceleration Z: 0</p>
     </div>
+
+
+<!-- the rest of your beautiful code goes here -->
+
+
+
 </body>
 
 <script>
