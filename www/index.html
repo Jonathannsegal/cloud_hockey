@@ -4,6 +4,7 @@
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <style>
 	body {
 		background-image: url("background.jpg");
@@ -27,10 +28,12 @@
       <p id="aX">acceleration X: 0</p>
       <p id="aY">acceleration Y: 0</p>
       <p id="aZ">acceleration Z: 0</p>
+	  <p id="ts"></p>
     </div>
 	<img id="rink" src="rink.jpg" height="400" width="800" style="display: none;">
 	<canvas id="canvasId" width="633" height="318" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
 	<canvas id="myChart" width="633" height="318" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
+	<img id="snakeHead" src="snakeHead.png" style="display: none;">
 <!-- the rest of your beautiful code goes here -->
 
 
@@ -45,6 +48,13 @@ firebase.initializeApp({
 });
 
 var db = firebase.firestore();
+var indexX = 316;
+var indexY = 159;
+var scale = 10;
+var velocityX = 0;
+var distanceX = 0;
+var velocityZ = 0;
+var distanceZ = 0;
 
 db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO")
     .onSnapshot(function(doc) {
@@ -55,7 +65,18 @@ db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO")
     document.getElementById("aX").textContent="acceleration X-axis " + doc.data().accelerationx;
     document.getElementById("aY").textContent="acceleration Y-axis " + doc.data().accelerationy;
     document.getElementById("aZ").textContent="acceleration Z-axis " + doc.data().accelerationz;
-    });
+	
+	var acceleration = Math.sqrt(Math.pow(doc.data().accelerationx, 2), Math.pow(doc.data().accelerationy, 2), Math.pow(doc.data().accelerationx, 2));
+    moveChart(acceleration);
+	
+	var context = document.getElementById("canvasId").getContext("2d");
+	//context.clearRect(indexX - 40, indexY - 40, 80, 80);
+	context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
+	indexX += (distanceX)*scale;
+	indexY += (distanceZ)*scale;
+	});
+
+
 
 window.onload = function() {
 		  var canvas = document.getElementById("canvasId");
@@ -64,6 +85,34 @@ window.onload = function() {
 		  ctx.drawImage(img, 0, 0);
 		};
 
+function moveChart(accel) {
+	var data = chart.data.datasets[0].data;
+	var acceleration = accel;
+	data.push(acceleration);
+	data.shift();
+	chart.scale
+	chart.update();
+}
+
+var context = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(context, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ["", "", "", "", "", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", "","", "", "", ""],
+        datasets: [{
+            label: "Hockey Stick Acceleration",
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 100, 200, 300, 400, 500, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
 </script>
 
 </html>
