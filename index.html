@@ -1,0 +1,41 @@
+<!doctype html>
+<head>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+</head>
+
+<body>
+  <h1>NOT Hockey Stick</h1>
+  <div>
+      <p id="gX">gryro X: 0</p>
+      <p id="gY">gryro Y: 0</p>
+      <p id="gZ">gryro Z: 0</p>
+      <p id="aX">acceleration X: 0</p>
+      <p id="aY">acceleration Y: 0</p>
+      <p id="aZ">acceleration Z: 0</p>
+    </div>
+</body>
+
+<script>
+firebase.initializeApp({
+  apiKey: 'AIzaSyBLqPvIYIL-Bf-W7cBteUDmtRhRSdZ0qGc',
+  authDomain: 'cloudhockey-233308.firebaseapp.com',
+  projectId: 'cloudhockey-233308'
+});
+
+var db = firebase.firestore();
+
+db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO")
+    .onSnapshot(function(doc) {
+    document.getElementById("gX").textContent="gryro X-axis " + doc.data().gryrox;
+    document.getElementById("gY").textContent="gryro Y-axis " + doc.data().gryroy;
+    document.getElementById("gZ").textContent="gryro Z-axis " + doc.data().gryroz;
+
+    document.getElementById("aX").textContent="acceleration X-axis " + doc.data().accelerationx;
+    document.getElementById("aY").textContent="acceleration Y-axis " + doc.data().accelerationy;
+    document.getElementById("aZ").textContent="acceleration Z-axis " + doc.data().accelerationz;
+    });
+
+</script>
+
+</html>
