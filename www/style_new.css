@@ -51,6 +51,13 @@ p {
   top: 665px;
   width: 590px;
 }
+
+.block_weight {
+  position: absolute;
+  left: 1205px;
+  top: 170px;
+  font-size: 40px;
+}
 .block_cal {
   position: absolute;
   left: 1147px;
