@@ -1,173 +1,268 @@
-<!doctype html>
+<!DOCTYPE html>
 <head>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-<style>
-	body {
-		background-image: url("background.jpg");
-		background-size: cover;
-	}
+  <link rel="stylesheet" href="style_new.css" />
+  <style>
+    html {
+      background: #fef2e2 url("assets/bg.png");
+      background-repeat: no-repeat;
+      background-size: 1680px;
+    }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 </head>
 
 <body>
-  <!-- this is a title on the page -->
-  <h1>NOT Hockey Stick</h1>
   <!-- this is the data that you have
   gyro x and y show orientation and acceleration x and y show movment
   what you should do is baced on direction move at the speed of the player
   at the start the player should have to "calibrate" by standing in a set area 
   then we dont need to deal with GPS (Ellissa waz here)-->
-  <div>
-      <p id="gX">gryro X: 0</p>
-      <p id="gY">gryro Y: 0</p>
-      <p id="gZ">gryro Z: 0</p>
-      <p id="aX">acceleration X: 0</p>
-      <p id="aY">acceleration Y: 0</p>
-      <p id="aZ">acceleration Z: 0</p>
-	  <p id="ts"></p>
-	  <p id="calories">Calories: </p>
-	  <a href="https://www.w3schools.com/html/" id="link">Click me For a Snack!</a>
-    </div>
-	<img id="rink" src="rink.jpg" height="400" width="800" style="display: none;">
-	<canvas id="canvasId" width="633" height="318" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
-	<div style="width:50%;">
-		<canvas id="myChart" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
-	</div>
-	<img id="snakeHead" src="snakeHead.png" style="display: none;">
-<!-- the rest of your beautiful code goes here -->
+  <div class="block1">
+    <p id="gX">gryro X: 0</p>
+    <p id="gY">gryro Y: 0</p>
+    <p id="gZ">gryro Z: 0</p>
+    <p id="aX">acceleration X: 0</p>
+    <p id="aY">acceleration Y: 0</p>
+    <p id="aZ">acceleration Z: 0</p>
+    <p id="ts"></p>
+  </div>
 
+  <div class="block_cal">
+    <p id="calories"></p>
+  </div>
 
+  <div class="block_food">
+    <a href="https://www.w3schools.com/html/" id="link">Food!!!!!</a>
+  </div>
 
+  <!-- 
+  <img
+    id="rink"
+    src="rink.jpg"
+    height="400"
+    width="800"
+    style="display: none;"
+  /> -->
+
+  <div class="block2">
+    <canvas id="canvasId" width="633" height="318"></canvas>
+  </div>
+
+  <div class="block3">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <img id="snakeHead" src="snakeHead.png" style="display: none;" />
+  <!-- the rest of your beautiful code goes here -->
 </body>
 
 <script>
-firebase.initializeApp({
-  apiKey: 'AIzaSyBLqPvIYIL-Bf-W7cBteUDmtRhRSdZ0qGc',
-  authDomain: 'cloudhockey-233308.firebaseapp.com',
-  projectId: 'cloudhockey-233308'
-});
+  firebase.initializeApp({
+    apiKey: "AIzaSyBLqPvIYIL-Bf-W7cBteUDmtRhRSdZ0qGc",
+    authDomain: "cloudhockey-233308.firebaseapp.com",
+    projectId: "cloudhockey-233308"
+  });
 
-var db = firebase.firestore();
-var indexX = 316;
-var indexY = 159;
-var scale = 30;
-var velocityX = 0;
-var velocityZ = 0;
-var timeStamp = 0;
-var timeSet = 0;
-var totalTime = 0;
-var link1 ="";
-var link2 ="";
-var link3 ="";
-var link4 ="";
-var link5 ="";
+  var db = firebase.firestore();
+  var indexX = 316;
+  var indexY = 159;
+  var scale = 30;
+  var velocityX = 0;
+  var velocityZ = 0;
+  var timeStamp = 0;
+  var timeSet = 0;
+  var totalTime = 0;
+  var link1 = "";
+  var link2 = "";
+  var link3 = "";
+  var link4 = "";
+  var link5 = "";
 
-db.collection("users").doc("jonathannsegal@gmail.com")
+  db.collection("users")
+    .doc("jonathannsegal@gmail.com")
     .onSnapshot(function(doc) {
-	document.getElementById("ts").textContent="time stamp " + doc.data().timestamp;
-    document.getElementById("gX").textContent="gryro X-axis " + doc.data().gryrox;
-    document.getElementById("gY").textContent="gryro Y-axis " + doc.data().gryroy;
-    document.getElementById("gZ").textContent="gryro Z-axis " + doc.data().gryroz;
+      document.getElementById("ts").textContent =
+        "time stamp " + doc.data().timestamp;
+      document.getElementById("gX").textContent =
+        "gryro X-axis " + doc.data().gryrox;
+      document.getElementById("gY").textContent =
+        "gryro Y-axis " + doc.data().gryroy;
+      document.getElementById("gZ").textContent =
+        "gryro Z-axis " + doc.data().gryroz;
 
-    document.getElementById("aX").textContent="acceleration X-axis " + doc.data().accelerationx;
-    document.getElementById("aY").textContent="acceleration Y-axis " + doc.data().accelerationy;
-    document.getElementById("aZ").textContent="acceleration Z-axis " + doc.data().accelerationz;
-	document.getElementById("calories").textContent="Calories: " + parseInt(calories);
-	if(calories < 150) {
-		document.getElementById("link").setAttribute("href", link1);
-	}
-	else if(calories >= 150 && calories < 300) {
-		document.getElementById("link").setAttribute("href", link2);
-	}
-	else if(calories >= 300 && calories < 450) {
-		document.getElementById("link").setAttribute("href", link3);
-	}
-	else if(calories >= 450 && calories < 600) {
-		document.getElementById("link").setAttribute("href", link4);
-	}
-	else {
-		document.getElementById("link").setAttribute("href", link5);
-	}
-	
-	if(timeSet == 0) {
-		timeStamp = doc.data().timestamp;
-		timeSet = 1;
-	}
-	else {
-		var acceleration = Math.sqrt(Math.pow(doc.data().accelerationx, 2), Math.pow(doc.data().accelerationy, 2), Math.pow(doc.data().accelerationx, 2));
-		moveChart(acceleration);
-		var context = document.getElementById("canvasId").getContext("2d");
-		//context.clearRect(indexX - 40, indexY - 40, 80, 80);
+      document.getElementById("aX").textContent =
+        "acceleration X-axis " + doc.data().accelerationx;
+      document.getElementById("aY").textContent =
+        "acceleration Y-axis " + doc.data().accelerationy;
+      document.getElementById("aZ").textContent =
+        "acceleration Z-axis " + doc.data().accelerationz;
+      document.getElementById("calories").textContent = parseInt(calories);
+      if (calories < 150) {
+        document.getElementById("link").setAttribute("href", link1);
+      } else if (calories >= 150 && calories < 300) {
+        document.getElementById("link").setAttribute("href", link2);
+      } else if (calories >= 300 && calories < 450) {
+        document.getElementById("link").setAttribute("href", link3);
+      } else if (calories >= 450 && calories < 600) {
+        document.getElementById("link").setAttribute("href", link4);
+      } else {
+        document.getElementById("link").setAttribute("href", link5);
+      }
 
-		console.log(indexX + " " + indexY);
-		var indexXT = ((velocityX * (doc.data().timestamp - timeStamp)/1000) + ((doc.data().accelerationx) * (Math.pow((doc.data().timestamp - timeStamp)/1000, 2))/2));
-		velocityX = (doc.data().accelerationx)*(doc.data().timestamp - timeStamp)/1000;
-		var indexYT = ((velocityZ * (doc.data().timestamp - timeStamp)/1000) + ((doc.data().accelerationz) * (Math.pow((doc.data().timestamp - timeStamp)/1000, 2))/2));
-		velocityZ = (doc.data().accelerationz)*(doc.data().timestamp - timeStamp)/1000;
-		
-		if(indexXT > 0.2 | indexXT < -0.2) {
-			indexX += indexXT * scale;
-		}
-		if(indexYT > 0.2 | indexYT < -0.2) {
-			indexY += indexYT * scale;
-		}
-		context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
-		
-		totalTime += (doc.data().timestamp - timeStamp)/1000;
-		calories = 548/3600*totalTime;
-		timeStamp = doc.data().timestamp;
-		console.log(calories);
-	}
-	});
-	
+      if (timeSet == 0) {
+        timeStamp = doc.data().timestamp;
+        timeSet = 1;
+      } else {
+        var acceleration = Math.sqrt(
+          Math.pow(doc.data().accelerationx, 2),
+          Math.pow(doc.data().accelerationy, 2),
+          Math.pow(doc.data().accelerationx, 2)
+        );
+        moveChart(acceleration);
+        var context = document.getElementById("canvasId").getContext("2d");
+        //context.clearRect(indexX - 40, indexY - 40, 80, 80);
 
-window.onload = function() {
-		  var canvas = document.getElementById("canvasId");
-		  var ctx = canvas.getContext("2d");
-		  var img = document.getElementById("rink");
-		  ctx.drawImage(img, 0, 0);
-		};
+        console.log(indexX + " " + indexY);
+        var indexXT =
+          (velocityX * (doc.data().timestamp - timeStamp)) / 1000 +
+          (doc.data().accelerationx *
+            Math.pow((doc.data().timestamp - timeStamp) / 1000, 2)) /
+            2;
+        velocityX =
+          (doc.data().accelerationx * (doc.data().timestamp - timeStamp)) /
+          1000;
+        var indexYT =
+          (velocityZ * (doc.data().timestamp - timeStamp)) / 1000 +
+          (doc.data().accelerationz *
+            Math.pow((doc.data().timestamp - timeStamp) / 1000, 2)) /
+            2;
+        velocityZ =
+          (doc.data().accelerationz * (doc.data().timestamp - timeStamp)) /
+          1000;
 
-function moveChart(accel) {
-	var data = chart.data.datasets[0].data;
-	var acceleration = accel;
-	data.push(acceleration);
-	data.shift();
-	chart.scale
-	chart.update();
-}
+        if ((indexXT > 0.2) | (indexXT < -0.2)) {
+          indexX += indexXT * scale;
+        }
+        if ((indexYT > 0.2) | (indexYT < -0.2)) {
+          indexY += indexYT * scale;
+        }
+        context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
 
-Chart.scaleService.updateScaleDefaults('linear', {
+        totalTime += (doc.data().timestamp - timeStamp) / 1000;
+        calories = (548 / 3600) * totalTime;
+        timeStamp = doc.data().timestamp;
+        console.log(calories);
+      }
+    });
+
+  window.onload = function() {
+    var canvas = document.getElementById("canvasId");
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("rink");
+    ctx.drawImage(img, 0, 0);
+  };
+
+  function moveChart(accel) {
+    var data = chart.data.datasets[0].data;
+    var acceleration = accel;
+    data.push(acceleration);
+    data.shift();
+    chart.scale;
+    chart.update();
+  }
+
+  Chart.scaleService.updateScaleDefaults("linear", {
     ticks: {
-        min: 0,
-		max: 100
+      min: 0,
+      max: 100
     }
-});
+  });
 
-var context = document.getElementById('myChart').getContext('2d');
-var chart = new Chart(context, {
+  var context = document.getElementById("myChart").getContext("2d");
+  var chart = new Chart(context, {
     // The type of chart we want to create
-    type: 'line',
+    type: "line",
 
     // The data for our dataset
     data: {
-        labels: ["", "", "", "", "", "", "", "","", "", "", "","", "", "", "",""],
-        datasets: [{
-            label: "Hockey Stick Acceleration",
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [0, 100, 200, 300, 400, 500, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        }]
+      labels: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      datasets: [
+        {
+          label: "Hockey Stick Acceleration",
+          backgroundColor: "#066754",
+          borderColor: "#F2D8D7",
+          data: [
+            0,
+            100,
+            200,
+            300,
+            400,
+            500,
+            600,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
     },
 
     // Configuration options go here
     options: {}
-});
+  });
 </script>
-
-</html>
