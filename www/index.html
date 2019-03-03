@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-<link rel="stylesheet" href="/www/style.css">
+<link rel="stylesheet" href="style.css">
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
@@ -9,19 +9,8 @@
 </head>
 
 <body>
+  <h1>Login</h1>
   <div id="firebaseui-auth-container"></div>
-  <h1>Hockey Stick</h1>
-  <div>
-      <p id="tS">TimeStamp: 0</p>
-      <br>
-      <p id="gX">gryro X: 0</p>
-      <p id="gY">gryro Y: 0</p>
-      <p id="gZ">gryro Z: 0</p>
-      <p id="aX">acceleration X: 0</p>
-      <p id="aY">acceleration Y: 0</p>
-      <p id="aZ">acceleration Z: 0</p>
-    </div>
-</body>
 
 <script>
 firebase.initializeApp({
@@ -31,72 +20,43 @@ firebase.initializeApp({
 });
 
 var db = firebase.firestore();
+var provider = new firebase.auth.GoogleAuthProvider();
+var user = firebase.auth().currentUser;
 
-firebase.auth().getRedirectResult().then(function(result) {
-  if (result.credential) {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    var token = result.credential.accessToken;
-    // ...
-  }
-  // The signed-in user info.
-  var user = firebase.auth().currentUser;
-  console.log(user);
-  db.collection("users").doc(user.email).set({
-    name: "Los Angeles",
-    state: "CA",
-    country: "USA"
-})
-.then(function() {
-    console.log("Document successfully written!");
-})
-.catch(function(error) {
-    console.error("Error writing document: ", error);
-});
-
-
-}).catch(function(error) {
-  // Handle Errors here.
-  var errorCode = error.code;
-  var errorMessage = error.message;
-  // The email of the user's account used.
-  var email = error.email;
-  // The firebase.auth.AuthCredential type that was used.
-  var credential = error.credential;
-  // ...
-});
-
-let gryro = new Gyroscope();
-gryro.start();
-
-let acceleration = new Accelerometer();
-acceleration.start();
-
-var user1 = db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO");
-
-gryro.onreading = () => {
-  user1.update({
-    timestamp: gryro.timestamp,
-    gryrox: gryro.x,
-    gryroy: gryro.y,
-    gryroz: gryro.z,
-    accelerationx: acceleration.x,
-    accelerationy: acceleration.y,
-    accelerationz: acceleration.z
-  })
-    document.getElementById("tS").textContent="TimeStamp " + gryro.timestamp;
-
-    document.getElementById("gX").textContent="gryro X-axis " + gryro.x;
-    document.getElementById("gY").textContent="gryro Y-axis " + gryro.y;
-    document.getElementById("gZ").textContent="gryro Z-axis " + gryro.z;
-
-    document.getElementById("aX").textContent="acceleration X-axis " + acceleration.x;
-    document.getElementById("aY").textContent="acceleration Y-axis " + acceleration.y;
-    document.getElementById("aZ").textContent="acceleration Z-axis " + acceleration.z;
+//Authentication
+// FirebaseUI config.
+  var uiConfig = {
+  callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+      firebase.auth().signInWithRedirect(provider);
+      // console.log(authResult.user);
+      return true;
+    },
+    uiShown: function() {
+      // The widget is rendered.
+      // Hide the loader.
+      // document.getElementById('loader').style.display = 'none';
+    }
+  },
+  // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+  signInFlow: 'popup',
+  signInSuccessUrl: 'main.html',
+  signInOptions: [
+    // Leave the lines as is for the providers you want to offer your users.
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  ],
+  // Terms of service url.
+  tosUrl: '<your-tos-url>',
+  // Privacy policy url.
+  privacyPolicyUrl: '<your-privacy-policy-url>'
 };
 
+  // Initialize the FirebaseUI Widget using Firebase.
+  var ui = new firebaseui.auth.AuthUI(firebase.auth());
+  // The start method will wait until the DOM is loaded.
+  ui.start('#firebaseui-auth-container', uiConfig);
 
-gryro.onerror = event => console.log(event.error.name, event.error.message);
-acceleration.onerror = event => console.log(event.error.name, event.error.message);
+var user1 = db.collection("users").doc("PI8sAlqTPs2bO1ZUtOZO");
 </script>
 
 </html>
