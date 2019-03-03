@@ -36,6 +36,7 @@
 		<canvas id="myChart" style="border:4px solid #BDBDBD; background-color: #212121"></canvas>
 	</div>
 	<img id="snakeHead" src="snakeHead.png" style="display: none;">
+	<input type="text" id="weight"/>
 <!-- the rest of your beautiful code goes here -->
 
 
@@ -57,6 +58,9 @@ var velocityX = 0;
 var velocityZ = 0;
 var timeStamp = 0;
 var timeSet = 0;
+var totalTime = 0;
+var totalAccelerationMag = 0;
+var calories = 0;//MET
 
 db.collection("users").doc("jonathannsegal@gmail.com")
     .onSnapshot(function(doc) {
@@ -84,14 +88,20 @@ db.collection("users").doc("jonathannsegal@gmail.com")
 		velocityX = (doc.data().accelerationx)*(doc.data().timestamp - timeStamp)/1000;
 		var indexYT = ((velocityZ * (doc.data().timestamp - timeStamp)/1000) + ((doc.data().accelerationz) * (Math.pow((doc.data().timestamp - timeStamp)/1000, 2))/2));
 		velocityZ = (doc.data().accelerationz)*(doc.data().timestamp - timeStamp)/1000;
-		timeStamp = doc.data().timestamp;
+		
 		if(indexXT > 0.2 | indexXT < -0.2) {
 			indexX += indexXT * scale;
 		}
 		if(indexYT > 0.2 | indexYT < -0.2) {
 			indexY += indexYT * scale;
 		}
-		context.drawImage(document.getElementById("snakeHead"), indexX, indexY);	
+		context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
+		
+		totalTime += (doc.data().timestamp - timeStamp)/1000;
+		totalAccelerationMag += acceleration;
+		calories = ((document.getElementById("weight").value*Math.pow(totalTime, 2)*Math.pow(totalAccelerationMag, 2)/2))/1000;
+		timeStamp = doc.data().timestamp;
+		console.log(calories);
 	}
 	});
 	
