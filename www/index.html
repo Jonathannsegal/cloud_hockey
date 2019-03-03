@@ -55,8 +55,19 @@
     <canvas id="myChart"></canvas>
   </div>
 
-  <img id="snakeHead" src="snakeHead.png" style="display: none;" />
+  <img id="snakeHead" src="assets/me.png" style="display: none;" />
   <!-- the rest of your beautiful code goes here -->
+
+  <p>
+    <a href="https://accounts.snapchat.com">
+      <img
+        src="assets/snap.png"
+        alt="login"
+        width="286px"
+        style="position: absolute; top: 0px; right: 0px;"
+      />
+    </a>
+  </p>
 </body>
 
 <script>
@@ -69,7 +80,7 @@
   var db = firebase.firestore();
   var indexX = 316;
   var indexY = 159;
-  var scale = 30;
+  var scale = 22;
   var velocityX = 0;
   var velocityZ = 0;
   var timeStamp = 0;
@@ -149,7 +160,7 @@
         if ((indexYT > 0.2) | (indexYT < -0.2)) {
           indexY += indexYT * scale;
         }
-        context.drawImage(document.getElementById("snakeHead"), indexX, indexY);
+        context.drawImage(document.getElementById("snakeHead"), indexX, indexY, 60, 60);
 
         totalTime += (doc.data().timestamp - timeStamp) / 1000;
         calories = (548 / 3600) * totalTime;

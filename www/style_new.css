@@ -38,29 +38,29 @@ p {
 .block1 {
   position: absolute;
   left: 1075px;
-  top: 605px;
+  top: 565px;
 }
 .block2 {
   position: absolute;
   left: 330px;
-  top: 255px;
+  top: 215px;
 }
 .block3 {
   position: absolute;
   left: 355px;
-  top: 715px;
+  top: 665px;
   width: 590px;
 }
 .block_cal {
   position: absolute;
-  left: 1150px;
-  top: 305px;
+  left: 1147px;
+  top: 265px;
   font-size: 60px;
 }
 .block_food {
   position: absolute;
   left: 1100px;
-  top: 465px;
+  top: 425px;
   font-size: 60px;
   opacity: 0;
 }
