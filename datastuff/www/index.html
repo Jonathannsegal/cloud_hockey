@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="style_new.css" />
+  <style>
+    html {
+      background: #fef2e2 url("assets/bg.png");
+      background-repeat: no-repeat;
+      background-size: 1680px;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+
+<body>
+  <!-- this is the data that you have
+  gyro x and y show orientation and acceleration x and y show movment
+  what you should do is baced on direction move at the speed of the player
+  at the start the player should have to "calibrate" by standing in a set area 
+  then we dont need to deal with GPS (Ellissa waz here)-->
+  <div class="block1">
+    <p id="gX">gryro X: 0</p>
+    <p id="gY">gryro Y: 0</p>
+    <p id="gZ">gryro Z: 0</p>
+    <p id="aX">acceleration X: 0</p>
+    <p id="aY">acceleration Y: 0</p>
+    <p id="aZ">acceleration Z: 0</p>
+    <p id="ts"></p>
+  </div>
+
+  <div contenteditable="true" class="block_weight">
+    <p id="user_weight">160</p>
+  </div>
+
+  <div class="block_cal">
+    <p id="calories"></p>
+  </div>
+
+  <div class="block_food">
+    <a href="https://www.w3schools.com/html/" id="link">Food!!!!!</a>
+  </div>
+
+  <!-- 
+  <img
+    id="rink"
+    src="rink.jpg"
+    height="400"
+    width="800"
+    style="display: none;"
+  /> -->
+
+  <button onclick="resetCanvas()">Reset Canvas</button>
+
+  <div class="block2">
+    <canvas id="canvasId" width="633" height="318"></canvas>
+  </div>
+
+  <div class="block3">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <div class="block4">
+      <canvas id="canvasId3" width="633" height="318"></canvas>
+    </div>
+
+  <!-- <img id="snakeHead" src="assets/me.png" style="display: none;" /> -->
+  <!-- the rest of your beautiful code goes here -->
+
+  <p>
+    <a href="https://accounts.snapchat.com">
+      <img
+        src="assets/snap.png"
+        alt="login"
+        width="286px"
+        style="position: absolute; top: 0px; right: 0px;"
+      />
+    </a>
+  </p>
+</body>
+
+<script>
+  var hockeyRink = document.getElementById("canvasId").getContext("2d");
+  var person = document.createElement("IMG");
+  var resetCanvasBool = 0;
+
+  firebase.initializeApp({
+    apiKey: "AIzaSyBLqPvIYIL-Bf-W7cBteUDmtRhRSdZ0qGc",
+    authDomain: "cloudhockey-233308.firebaseapp.com",
+    projectId: "cloudhockey-233308"
+  });
+
+  var db = firebase.firestore();
+  var indexX = 316;
+  var indexY = 159;
+  var scale = 22;
+  var dict_users = {};
+  var velocityX = 0;
+  var velocityZ = 0;
+  var timeStamp = 0;
+  var timeSet = 0;
+  var totalTime = 0;
+  var link1 = "https://www-beta.panerabread.com/en-us/menu/products/asiago-cheese-focaccia.html";
+  var link2 = "https://www-beta.panerabread.com/en-us/menu/products/greek-yogurt-with-mixed-berries-parfait1.html";
+  var link3 = "https://www-beta.panerabread.com/en-us/menu/products/bear-claw.html";
+  var link4 = "https://www-beta.panerabread.com/en-us/menu/products/broccoli-cheddar-soup---group.html";
+  var link5 = "https://www-beta.panerabread.com/en-us/menu/products/bacon-mac---cheese.html";
+  
+  var initialTime = 0;
+  
+  var otherTime = 0;
+
+  setInterval(() => otherTime++, 1000);
+  
+  var image = new Image();
+image.src = "assets/me.png";
+image.onload = function(){
+  db.collection('users').onSnapshot(function(users){
+    hockeyRink.clearRect(0, 0, 633, 318);
+    var index = 0;
+
+    if(Boolean(resetCanvasBool) == true){
+      Object.keys(dict_users).forEach(key => {
+        dict_users[key].indexY = 129;
+        dict_users[key].indexX = 305;
+      })
+      resetCanvasBool = 0;
+    }
+    var last_user;
+    users.forEach(function(user){
+      last_user = user;
+      
+      if(!dict_users[user.id]) {
+        dict_users[user.id] = {
+          indexX: 0,
+          indexY: 0,
+          velocityX: 0,
+          velocityY: 0,
+          timeStamp: 0,
+          timeset: 0,
+          totalTime: 0
+        };
+      }
+
+      if (dict_users[user.id].timeSet == 0) {
+        dict_users[user.id].timeStamp = user.data().timestamp;
+        initialTime = user.data().timestamp/1000;
+        dict_users[user.id].timeSet = 1;
+      } else {
+        var acceleration = Math.sqrt(
+          Math.pow(user.data().accelerationx, 2),
+          Math.pow(user.data().accelerationy, 2),
+          Math.pow(user.data().accelerationx, 2)
+        );
+        moveChart(acceleration);
+        var indexXT = 
+            (dict_users[user.id].velocityX * (user.data().timestamp - dict_users[user.id].timeStamp)) / 1000 +
+            (user.data().accelerationx *
+              Math.pow((user.data().timestamp - dict_users[user.id].timeStamp) / 1000, 2)) /
+              2;
+          dict_users[user.id].velocityX =
+            (user.data().accelerationx * (user.data().timestamp - dict_users[user.id].timeStamp)) /
+            1000;
+          var indexYT =
+            (dict_users[user.id].velocityZ * (user.data().timestamp - dict_users[user.id].timeStamp)) / 1000 +
+            (user.data().accelerationz *
+              Math.pow((user.data().timestamp - dict_users[user.id].timeStamp) / 1000, 2)) /
+              2;
+          dict_users[user.id].velocityZ =
+            (user.data().accelerationz * (user.data().timestamp - dict_users[user.id].timeStamp)) /
+            1000;
+
+            if ((indexXT > 0.2) | (indexXT < -0.2)) {
+              dict_users[user.id].indexX += indexXT * scale;
+        }
+        if ((indexYT > 0.2) | (indexYT < -0.2)) {
+          dict_users[user.id].indexY += indexYT * scale;
+          }
+
+        //   if(Boolean(resetCanvasBool) == true){
+        //     dict_users[user.id].indexX = 305;
+        //     dict_users[user.id].indexY = 129;
+        //   resetCanvasBool = 0;
+        // }
+        hockeyRink.drawImage(image, dict_users[user.id].indexX, dict_users[user.id].indexY, 60, 60);
+        dict_users[user.id].totalTime += (parseInt(user.data().timestamp) - parseInt(dict_users[user.id].timeStamp)) / 1000;
+        // shows user weight
+        
+      }
+
+      document.getElementById("ts").textContent =
+        "time stamp " + user.data().timestamp;
+      document.getElementById("gX").textContent =
+        "gryro X-axis " + user.data().gryrox;
+      document.getElementById("gY").textContent =
+        "gryro Y-axis " + user.data().gryroy;
+      document.getElementById("gZ").textContent =
+        "gryro Z-axis " + user.data().gryroz;
+
+
+
+        document.getElementById("aX").textContent =
+        "acceleration X-axis " + user.data().accelerationx;
+      document.getElementById("aY").textContent =
+        "acceleration Y-axis " + user.data().accelerationy;
+      document.getElementById("aZ").textContent =
+        "acceleration Z-axis " + user.data().accelerationz;
+
+      })
+
+      console.log(calories);
+
+        var calories = (548 / 3600) * otherTime;
+
+//         // shows user weight
+//         // calories = parseInt(document.getElementById("user_weight").textContent);
+
+              
+      document.getElementById("calories").textContent = parseInt(calories);
+
+      if (calories < 150) {
+        document.getElementById("link").setAttribute("href", link1);
+      } else if (calories >= 150 && calories < 300) {
+        document.getElementById("link").setAttribute("href", link2);
+      } else if (calories >= 300 && calories < 450) {
+        document.getElementById("link").setAttribute("href", link3);
+      } else if (calories >= 450 && calories < 600) {
+        document.getElementById("link").setAttribute("href", link4);
+      } else {
+        document.getElementById("link").setAttribute("href", link5);
+      }
+    });
+};
+
+
+
+
+
+
+// var image = new Image();
+// image.src = "assets/me.png";
+// image.onload = function(){
+//   db.collection('users').onSnapshot(function(users){
+//     hockeyRink.clearRect(indexX - 40, indexY - 40, 100, 100);
+//     users.forEach(function(user,index){
+
+
+        
+      //   document.getElementById("ts").textContent =
+      //   "time stamp " + user.data().timestamp;
+      // document.getElementById("gX").textContent =
+      //   "gryro X-axis " + user.data().gryrox;
+      // document.getElementById("gY").textContent =
+      //   "gryro Y-axis " + user.data().gryroy;
+      // document.getElementById("gZ").textContent =
+      //   "gryro Z-axis " + user.data().gryroz;
+
+      //   document.getElementById("aX").textContent =
+      //   "acceleration X-axis " + user.data().accelerationx;
+      // document.getElementById("aY").textContent =
+      //   "acceleration Y-axis " + user.data().accelerationy;
+      // document.getElementById("aZ").textContent =
+      //   "acceleration Z-axis " + user.data().accelerationz;
+      // document.getElementById("calories").textContent = parseInt(calories);
+
+      // if (calories < 150) {
+      //   document.getElementById("link").setAttribute("href", link1);
+      // } else if (calories >= 150 && calories < 300) {
+      //   document.getElementById("link").setAttribute("href", link2);
+      // } else if (calories >= 300 && calories < 450) {
+      //   document.getElementById("link").setAttribute("href", link3);
+      // } else if (calories >= 450 && calories < 600) {
+      //   document.getElementById("link").setAttribute("href", link4);
+      // } else {
+      //   document.getElementById("link").setAttribute("href", link5);
+      // }
+
+//       //////
+//       if (timeSet == 0) {
+//         timeStamp = user.data().timestamp;
+//         timeSet = 1;
+//       } else {
+//         var acceleration = Math.sqrt(
+//           Math.pow(user.data().accelerationx, 2),
+//           Math.pow(user.data().accelerationy, 2),
+//           Math.pow(user.data().accelerationx, 2)
+//         );
+//         // moveChart(acceleration);
+        
+//         // console.log(indexX + " " + indexY);
+//         var indexXT =
+//           (velocityX * (user.data().timestamp - timeStamp)) / 1000 +
+//           (user.data().accelerationx *
+//             Math.pow((user.data().timestamp - timeStamp) / 1000, 2)) /
+//             2;
+//         velocityX =
+//           (user.data().accelerationx * (user.data().timestamp - timeStamp)) /
+//           1000;
+//         var indexYT =
+//           (velocityZ * (user.data().timestamp - timeStamp)) / 1000 +
+//           (user.data().accelerationz *
+//             Math.pow((user.data().timestamp - timeStamp) / 1000, 2)) /
+//             2;
+//         velocityZ =
+//           (user.data().accelerationz * (user.data().timestamp - timeStamp)) /
+//           1000;
+
+//           if ((indexXT > 0.2) | (indexXT < -0.2)) {
+//           indexX += indexXT * scale;
+//         }
+//         if ((indexYT > 0.2) | (indexYT < -0.2)) {
+//           indexY += indexYT * scale;
+//         }
+//         // console.log(Boolean(resetCanvasBool));
+//         if(Boolean(resetCanvasBool) == true){
+//           indexX = 305;
+//           indexY = 129;
+//           resetCanvasBool = 0;
+//         }
+//         hockeyRink.drawImage(image, indexX, indexY, 60, 60);
+
+//         totalTime += (user.data().timestamp - timeStamp) / 1000;
+//         // calories = (548 / 3600) * totalTime;
+
+//         // shows user weight
+//         // calories = parseInt(document.getElementById("user_weight").textContent);
+        
+//         timeStamp = user.data().timestamp;
+//         // console.log(calories);
+//       }
+//       })
+//     });
+// };
+
+  function resetCanvas(){
+        resetCanvasBool = 1;
+    }
+
+  window.onload = function() {
+    var canvas = document.getElementById("canvasId");
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("rink");
+    // ctx.drawImage(img, 0, 0);
+  };
+
+  function moveChart(accel) {
+    var data = chart.data.datasets[0].data;
+    var acceleration = accel;
+    data.push(acceleration);
+    data.shift();
+    chart.scale;
+    chart.update();
+  }
+
+  Chart.scaleService.updateScaleDefaults("linear", {
+    ticks: {
+      min: 0,
+      max: 100
+    }
+  });
+
+  var context = document.getElementById("myChart").getContext("2d");
+  var chart = new Chart(context, {
+    // The type of chart we want to create
+    type: "line",
+
+    // The data for our dataset
+    data: {
+      labels: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      datasets: [
+        {
+          label: "Hockey Stick Acceleration",
+          backgroundColor: "#066754",
+          borderColor: "#F2D8D7",
+          data: [
+            0,
+            100,
+            200,
+            300,
+            400,
+            500,
+            600,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+
+    // Configuration options go here
+    options: {}
+  });
+</script>
