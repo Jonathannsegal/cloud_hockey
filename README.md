@@ -1,5 +1,7 @@
 # Cloud Hockey 🏒
 
+> **Archived:** PickHacks project preserved for reference; not under active development.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![HitCount](http://hits.dwyl.com/jonathannsegal/cloud_hockey.svg)](http://hits.dwyl.com/jonathannsegal/cloud_hockey)
 
